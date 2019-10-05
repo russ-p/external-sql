@@ -11,6 +11,16 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class ExternalSQLFactory {
 
+	private final ClassLoader classLoader;
+
+	public ExternalSQLFactory() {
+		this(ExternalSQLFactory.class.getClassLoader());
+	}
+
+	public ExternalSQLFactory(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<T> clazz) throws IOException, InstantiationException, IllegalAccessException {
 		ExternalSQL anno = clazz.getAnnotation(ExternalSQL.class);
@@ -35,7 +45,7 @@ public class ExternalSQLFactory {
 
 		Class<?> dynamicType = intercept
 				.make()
-				.load(getClass().getClassLoader())
+				.load(classLoader)
 				.getLoaded();
 
 		return (T) dynamicType.newInstance();
