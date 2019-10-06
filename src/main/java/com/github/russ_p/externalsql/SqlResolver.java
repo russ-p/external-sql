@@ -1,9 +1,10 @@
 package com.github.russ_p.externalsql;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,11 +18,11 @@ class SqlResolver {
 	private final Map<String, String> queries = new HashMap<>();
 
 	public SqlResolver(String filename) throws IOException {
-		this(new File(resolvePath(filename)));
+		this(resolvePath(filename));
 	}
 
-	public SqlResolver(File file) throws IOException {
-		parseFile(file);
+	public SqlResolver(InputStream is) throws IOException {
+		parseFile(is);
 	}
 
 	public Set<String> getQueryNames() {
@@ -41,10 +42,10 @@ class SqlResolver {
 		queries.put(name, query);
 	}
 
-	private void parseFile(File file) throws IOException {
+	private void parseFile(InputStream is) throws IOException {
 		String queryName = "";
 		StringBuffer query = new StringBuffer();
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 			String line = reader.readLine();
 			while (line != null) {
 				if (isSqlHeaderComment(line)) {
@@ -84,11 +85,11 @@ class SqlResolver {
 		throw new IllegalStateException("No sql query name found in line " + line);
 	}
 
-	private static String resolvePath(String path) {
+	private static InputStream resolvePath(String path) throws IOException {
 		if (path.startsWith("classpath:")) {
-			return SqlResolver.class.getClassLoader().getResource(path.substring(10)).getFile();
+			return SqlResolver.class.getClassLoader().getResourceAsStream(path.substring(10));
 		}
-		return path;
+		return new FileInputStream(path);
 	}
 
 }
