@@ -49,4 +49,18 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>${deployment.releases.id}</id>
+			<name>Releases</name>
+			<url>${deployment.releases.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>${deployment.snapshots.id}</id>
+			<name>Snapshots</name>
+			<url>${deployment.snapshots.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>

@@ -1,0 +1,24 @@
+kind: pipeline
+name: default
+
+steps:
+
+- name: install
+  image: maven:3.6.1-jdk-8-slim
+  volumes:
+  - name: mvnrepo
+    path: /root/.m2  
+  commands:
+  - mvn install deploy -Ddeployment.releases.id=$DEPREPO -Ddeployment.releases.url=$DEPREPOURL -Ddeployment.snapshots.id=$DEPREPO -Ddeployment.snapshots.url=$DEPREPOSNAPURL
+  environment:
+    DEPREPO:
+      from_secret: deprepo
+    DEPREPOURL:
+      from_secret: deprepourl
+    DEPREPOSNAPURL:
+      from_secret: depreposnapurl     
+
+volumes:
+- name: mvnrepo
+  host:
+    path: /media/data/storage/.m2
